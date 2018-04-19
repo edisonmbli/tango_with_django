@@ -11,4 +11,5 @@ urlpatterns = [
     re_path(r'^category/(?P<category_name_slug>[\w\-]+)/add_page/$',
             views.add_page, name='add_page'),
     path('register/', views.register, name='register'),
+    path('login/', views.user_login, name='login'),
 ]

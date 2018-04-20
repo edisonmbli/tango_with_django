@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rango',
+    'registration',
 ]
 
 MIDDLEWARE = [
@@ -128,12 +129,17 @@ STATIC_URL = '/static/'
 
 
 # Media files (User Uploaded)
-
 MEDIA_ROOT = MEDIA_DIR
 MEDIA_URL = '/media/'
 
-# Restrict Access redirect URL
-LOGIN_URL = '/rango/login/'
 
 # Session expiration
 SESSION_COOKIE_AGE = 3600
+
+
+# Registration
+REGISTRATION_OPEN = True
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_AUTO_LOGIN = True
+LOGIN_REDIRECT_URL = '/rango/'
+LOGIN_URL = '/accounts/login/'

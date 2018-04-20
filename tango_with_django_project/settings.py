@@ -134,3 +134,6 @@ MEDIA_URL = '/media/'
 
 # Restrict Access redirect URL
 LOGIN_URL = '/rango/login/'
+
+# Session expiration
+SESSION_COOKIE_AGE = 3600

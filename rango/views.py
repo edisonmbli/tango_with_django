@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from rango.webhose_search import run_query
 
 # Index
 
@@ -166,6 +167,7 @@ def get_server_side_cookie(request, cookie, default_val=None):
 # cookie helper function - visitor counter
 
 
+# Visitor cookie
 def visitor_cookie_handler(request):
     visits = int(get_server_side_cookie(request, 'visits', '1'))
     last_visit_cookie = get_server_side_cookie(
@@ -181,3 +183,16 @@ def visitor_cookie_handler(request):
         request.session['last_visit'] = last_visit_cookie
 
     request.session['visits'] = visits
+
+
+# Search
+def search(request):
+    result_list = []
+    query = None
+
+    if request.method == 'POST':
+        query = request.POST['query'].strip()
+        if query:
+            result_list = run_query(query)
+
+    return render(request, 'rango/search.html', {'queryString': query, 'result_list': result_list})

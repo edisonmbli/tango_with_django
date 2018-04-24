@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from rango.webhose_search import run_query
+from registration.backends.simple.views import RegistrationView
 
 # Index
 
@@ -37,18 +38,26 @@ def about(request):
 def show_category(request, category_name_slug):
     context_dict = {}
 
+    # Prepare category and page
     try:
-
         category = Category.objects.get(slug=category_name_slug)
         pages = Page.objects.filter(category=category)
-
         context_dict['pages'] = pages
         context_dict['category'] = category
 
     except Category.DoesNotExist:
+        context_dict['pages'] = None
+        context_dict['category'] = None
 
-        context_dict['pages'] = pages
-        context_dict['category'] = category
+    # Prepare result list
+    context_dict['queryString'] = category.name
+    result_list = []
+    if request.method == 'POST':
+        query = request.POST['query'].strip()
+        if query:
+            result_list = run_query(query)
+            context_dict['queryString'] = query
+            context_dict['result_list'] = result_list
 
     return render(request, 'rango/category.html', context_dict)
 
@@ -94,33 +103,59 @@ def add_page(request, category_name_slug):
 
 
 # Register
-def register(request):
-    registered = False
+# def register(request):
+#    registered = False
+#
+#    if request.method == 'POST':
+#        user_form = UserForm(data=request.POST)
+#        profile_form = UserProfileForm(data=request.POST)
+#
+#        if user_form.is_valid() and profile_form.is_valid():
+#            user = user_form.save()
+#            user.set_password(user.password)
+#            user.save()
+#
+#            profile = profile_form.save(commit=False)
+#            profile.user = user
+#
+#            if 'picture' in request.FILES:
+#                profile.picture = request.FILES['picture']
+#
+#            profile.save()
+#            registered = True
+#        else:
+#            print(user_form.errors, profile_form.errors)
+#    else:
+#        user_form = UserForm()
+#        profile_form = UserProfileForm()
+#
+#    return render(request, 'rango/register.html', {'user_form': user_form, 'profile_form': profile_form, 'registered': registered})
 
+
+# Class-based view for registration
+class MyRegistrationView(RegistrationView):
+    def get_success_url(self, user):
+        return reverse('register_profile')
+
+
+# Register profile
+@login_required
+def register_profile(request):
+    form = UserProfileForm()
     if request.method == 'POST':
-        user_form = UserForm(data=request.POST)
-        profile_form = UserProfileForm(data=request.POST)
+        form = UserProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            user_profile = form.save(commit=False)
+            user_profile.user = request.user
+            user_profile.save()
 
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save()
-            user.set_password(user.password)
-            user.save()
-
-            profile = profile_form.save(commit=False)
-            profile.user = user
-
-            if 'picture' in request.FILES:
-                profile.picture = request.FILES['picture']
-
-            profile.save()
-            registered = True
+            return HttpResponseRedirect(reverse('index'))
         else:
-            print(user_form.errors, profile_form.errors)
-    else:
-        user_form = UserForm()
-        profile_form = UserProfileForm()
+            print(form.errors)
 
-    return render(request, 'rango/register.html', {'user_form': user_form, 'profile_form': profile_form, 'registered': registered})
+    context_dict = {'form': form}
+
+    return render(request, 'rango/profile_registration.html', context_dict)
 
 
 # User Login
@@ -196,3 +231,16 @@ def search(request):
             result_list = run_query(query)
 
     return render(request, 'rango/search.html', {'queryString': query, 'result_list': result_list})
+
+
+# Track URL before redirect to external page
+def track_url(request, page_id):
+
+    try:
+        page = Page.objects.get(id=page_id)
+        page.views += 1
+        page.save()
+        return HttpResponseRedirect(page.url)
+    except:
+        print("Page id {0} not found".format(page_id))
+        return HttpResponseRedirect(reverse('index'))

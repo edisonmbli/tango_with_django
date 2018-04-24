@@ -8,19 +8,50 @@
 {% block body_block %}
 	<div>
 	{% if category %}
+
 		<h1>{{ category.name }}</h1>
 		{% if pages %}
 			<ul>
 				{% for page in pages %}
-					<li><a href="{{ page.url }}">{{ page.title }}</a></li>
+					<li><a href="{% url 'goto' page.id %}">{{ page.title }}</a></li>
 				{% endfor %}
 			</ul>
-		{% else %}
+		{% else %} 
 			<strong>No pages currently in category.</strong>
 		{% endif %}
+		
 		{% if request.user.is_authenticated %}
-			<a href="{% url 'add_page' category.slug %}">Add Page</a><br>
+		<div>
+		    <h1>Search with Rango</h1>
+		    <br>
+		    <form action="{% url 'show_category' category.slug %}" class="form-inline" id="user_form" method="post">
+		        {% csrf_token %}
+		        <div class="form-group">
+		            <input type="text" size="50" class="form-control" name="query" value="{{ queryString }}" id="query">
+		        </div>
+		        <button class="btn btn-primary" type="submit" name="submit" value="Search"> Search</button>
+		    </form>
+
+		    <div>
+		        {% if result_list %}
+		        <h3>Results</h3>
+		        <div class="list-group">
+		        {% for result in result_list %}
+		            <div class="list-group-item">
+		                <h4 class="list-group-item-heading">
+		                    <a href="{{ result.link }}">{{ result.title }}</a>
+		                    <p class="list-group-item-text">{{ result.summary }}</p>
+		                </h4>
+		            </div>
+		        {% endfor %}
+		        </div>
+		        {% endif %}
+		    </div>
+		</div>
+
+		<a href="{% url 'add_page' category.slug %}">Add Page</a><br>
 		{%endif%}
+
 	{% else %}
 		The specified category does not exist!
 	{% endif %}

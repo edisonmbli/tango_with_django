@@ -143,3 +143,4 @@ ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_AUTO_LOGIN = True
 LOGIN_REDIRECT_URL = '/rango/'
 LOGIN_URL = '/accounts/login/'
+SIMPLE_BACKEND_REDIRECT_URL = '/rango/register_profile/'

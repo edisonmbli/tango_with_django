@@ -244,3 +244,27 @@ def track_url(request, page_id):
     except:
         print("Page id {0} not found".format(page_id))
         return HttpResponseRedirect(reverse('index'))
+
+
+# Profile
+@login_required
+def profile(request, username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return HttpResponseRedirect(reverse('index'))
+
+    userprofile = UserProfile.objects.get_or_create(user=user)[0]
+    form = UserProfileForm(
+        {'website': userprofile.website, 'picture': userprofile.picture})
+
+    if request.method == 'POST':
+        form = UserProfileForm(
+            request.POST, request.FILES, instance=userprofile)
+        if form.is_valid():
+            form.save(commit=True)
+            return HttpResponseRedirect(reverse('profile', args=[user.username]))
+        else:
+            print(form.errors)
+
+    return render(request, 'rango/profile.html', {'userprofile': userprofile, 'selecteduser': user, 'form': form})

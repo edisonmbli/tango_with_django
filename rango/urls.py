@@ -11,6 +11,7 @@ urlpatterns = [
     path('goto/<int:page_id>/', views.track_url, name='goto'),
     path('register_profile/', views.register_profile, name='register_profile'),
     path('profile/<username>/', views.profile, name='profile'),
+    path('like/', views.like_category, name='like_category'),
     re_path(
         r'^category/(?P<category_name_slug>[\w\-]+)/$',
         views.show_category, name='show_category'),

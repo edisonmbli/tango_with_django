@@ -1,9 +1,8 @@
 from django import template
 from rango.models import Category
 
-register = template.Library()
 
-
-@register.inclusion_tag('rango/cats.html')
-def get_category_list(cat=None):
-    return {'cats': Category.objects.all(), 'act_cat': cat}
+def get_category_list(max_results=0, starts_with=''):
+    cat_list = []
+    if starts_with:
+        cat_list = Category.objects.filter(name__istartswith=starts_with)

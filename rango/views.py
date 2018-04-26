@@ -268,3 +268,21 @@ def profile(request, username):
             print(form.errors)
 
     return render(request, 'rango/profile.html', {'userprofile': userprofile, 'selecteduser': user, 'form': form})
+
+
+# Increment like for the specified category
+@login_required
+def like_category(request):
+    cat_id = None
+    likes = 0
+
+    if request.method == 'GET':
+        cat_id = request.GET.get('category_id', None)
+        if cat_id:
+            cat = Category.objects.get(id=int(cat_id))
+            if cat:
+                likes = cat.likes + 1
+                cat.likes = likes
+                cat.save()
+
+    return HttpResponse(likes)

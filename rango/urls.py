@@ -12,6 +12,7 @@ urlpatterns = [
     path('register_profile/', views.register_profile, name='register_profile'),
     path('profile/<username>/', views.profile, name='profile'),
     path('like/', views.like_category, name='like_category'),
+    path('suggest/', views.suggest_category, name='suggest_category'),
     re_path(
         r'^category/(?P<category_name_slug>[\w\-]+)/$',
         views.show_category, name='show_category'),

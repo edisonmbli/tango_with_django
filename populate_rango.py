@@ -31,6 +31,18 @@ def populate():
          "url": "http://www.tangowithdjango.com/",
          "views": 21}]
 
+    coffee_pages = [
+        {"title": "Starbuck",
+         "url": "https://www.starbucks.com/",
+         "views": 45},
+        {"title": "CoffeeBox",
+         "url": "http://www.coffeebox.com/",
+         "views": 31},
+        {"title": "Luckin",
+         "url": "http://www.luckincoffee.com/",
+         "views": 11}
+    ]
+
     other_pages = [
         {"title": "Bottle",
          "url": "http://bottlepy.org/docs/dev/",
@@ -41,6 +53,7 @@ def populate():
 
     cats = {"Python": {"pages": python_pages, "views": 128, "likes": 64},
             "Django": {"pages": django_pages, "views": 64, "likes": 32},
+            "Coffee": {"pages": coffee_pages, "views": 112, "likes": 28},
             "Other Frameworks": {"pages": other_pages, "views": 32, "likes": 16}}
 
     for cat, cat_data in cats.items():
